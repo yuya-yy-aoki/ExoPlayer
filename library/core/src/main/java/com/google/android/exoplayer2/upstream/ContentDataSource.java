@@ -18,12 +18,20 @@ package com.google.android.exoplayer2.upstream;
 import static com.google.android.exoplayer2.util.Util.castNonNull;
 import static java.lang.Math.min;
 
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
+import android.media.ApplicationMediaCapabilities;
+import android.media.MediaFeature;
+import android.media.MediaFormat;
 import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.util.Util;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -66,7 +74,18 @@ public final class ContentDataSource extends BaseDataSource {
       this.uri = uri;
 
       transferInitializing(dataSpec);
-      AssetFileDescriptor assetFileDescriptor = resolver.openAssetFileDescriptor(uri, "r");
+
+      Bundle providerOptions = new Bundle();
+      if (Util.SDK_INT >= 31) {
+        ApplicationMediaCapabilities mediaCapabilities = new ApplicationMediaCapabilities.Builder()
+            .addSupportedVideoMimeType(MediaFormat.MIMETYPE_VIDEO_HEVC)
+            .addSupportedHdrType(MediaFeature.HdrType.HDR10)
+            .addSupportedHdrType(MediaFeature.HdrType.HDR10_PLUS)
+            .build();
+        providerOptions.putParcelable(MediaStore.EXTRA_MEDIA_CAPABILITIES, mediaCapabilities);
+      }
+
+      AssetFileDescriptor assetFileDescriptor = resolver.openTypedAssetFileDescriptor(uri, "*/*", providerOptions);
       this.assetFileDescriptor = assetFileDescriptor;
       if (assetFileDescriptor == null) {
         throw new FileNotFoundException("Could not open file descriptor for: " + uri);
