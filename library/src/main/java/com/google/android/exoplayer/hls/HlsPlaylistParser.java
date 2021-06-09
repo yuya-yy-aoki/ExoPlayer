@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
+ * Copyright 2021 Sony Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +60,7 @@ public final class HlsPlaylistParser implements UriLoadable.Parser<HlsPlaylist> 
   private static final String URI_ATTR = "URI";
   private static final String IV_ATTR = "IV";
   private static final String INSTREAM_ID_ATTR = "INSTREAM-ID";
+  private static final String VIDEO_RANGE_ATTR = "VIDEO-RANGE";
 
   private static final String AUDIO_TYPE = "AUDIO";
   private static final String VIDEO_TYPE = "VIDEO";
@@ -100,6 +102,8 @@ public final class HlsPlaylistParser implements UriLoadable.Parser<HlsPlaylist> 
       Pattern.compile(NAME_ATTR + "=\"(.+?)\"");
   private static final Pattern INSTREAM_ID_ATTR_REGEX =
       Pattern.compile(INSTREAM_ID_ATTR + "=\"(.+?)\"");
+  private static final Pattern VIDEO_RANGE_ATTR_REGEX =
+      Pattern.compile(VIDEO_RANGE_ATTR + "=([a-zA-Z]{2,3})");
   // private static final Pattern AUTOSELECT_ATTR_REGEX =
   //     HlsParserUtil.compileBooleanAttrPattern(AUTOSELECT_ATTR);
   // private static final Pattern DEFAULT_ATTR_REGEX =
@@ -146,6 +150,7 @@ public final class HlsPlaylistParser implements UriLoadable.Parser<HlsPlaylist> 
     ArrayList<Variant> subtitles = new ArrayList<>();
     int bitrate = 0;
     String codecs = null;
+    String videoRange = null;
     int width = -1;
     int height = -1;
     String name = null;
@@ -170,7 +175,7 @@ public final class HlsPlaylistParser implements UriLoadable.Parser<HlsPlaylist> 
           String uri = HlsParserUtil.parseStringAttr(line, URI_ATTR_REGEX, URI_ATTR);
           String language = HlsParserUtil.parseOptionalStringAttr(line, LANGUAGE_ATTR_REGEX);
           Format format = new Format(subtitleName, MimeTypes.APPLICATION_M3U8, -1, -1, -1, -1, -1,
-              -1, language, codecs);
+              -1, language, codecs, videoRange);
           subtitles.add(new Variant(uri, format));
         } else if (AUDIO_TYPE.equals(type)) {
           // We assume all audios belong to the same group.
@@ -179,7 +184,7 @@ public final class HlsPlaylistParser implements UriLoadable.Parser<HlsPlaylist> 
           if (uri != null) {
             String audioName = HlsParserUtil.parseStringAttr(line, NAME_ATTR_REGEX, NAME_ATTR);
             Format format = new Format(audioName, MimeTypes.APPLICATION_M3U8, -1, -1, -1, -1, -1,
-                -1, language, codecs);
+                -1, language, codecs, videoRange);
             audios.add(new Variant(uri, format));
           } else {
             muxedAudioLanguage = language;
@@ -188,6 +193,7 @@ public final class HlsPlaylistParser implements UriLoadable.Parser<HlsPlaylist> 
       } else if (line.startsWith(STREAM_INF_TAG)) {
         bitrate = HlsParserUtil.parseIntAttr(line, BANDWIDTH_ATTR_REGEX, BANDWIDTH_ATTR);
         codecs = HlsParserUtil.parseOptionalStringAttr(line, CODECS_ATTR_REGEX);
+        videoRange = HlsParserUtil.parseOptionalStringAttr(line, VIDEO_RANGE_ATTR_REGEX);
         name = HlsParserUtil.parseOptionalStringAttr(line, NAME_ATTR_REGEX);
         String resolutionString = HlsParserUtil.parseOptionalStringAttr(line,
             RESOLUTION_ATTR_REGEX);
@@ -213,10 +219,11 @@ public final class HlsPlaylistParser implements UriLoadable.Parser<HlsPlaylist> 
           name = Integer.toString(variants.size());
         }
         Format format = new Format(name, MimeTypes.APPLICATION_M3U8, width, height, -1, -1, -1,
-            bitrate, null, codecs);
+            bitrate, null, codecs, videoRange);
         variants.add(new Variant(line, format));
         bitrate = 0;
         codecs = null;
+        videoRange = null;
         name = null;
         width = -1;
         height = -1;

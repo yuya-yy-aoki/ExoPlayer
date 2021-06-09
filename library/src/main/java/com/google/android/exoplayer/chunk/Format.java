@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
+ * Copyright 2021 Sony Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,6 +90,11 @@ public class Format {
   public final String language;
 
   /**
+   * The video range of the format.
+   */
+  public final String videoRange;
+
+  /**
    * @param id The format identifier.
    * @param mimeType The format mime type.
    * @param width The width of the video in pixels, or -1 if unknown or not applicable.
@@ -137,6 +143,27 @@ public class Format {
    */
   public Format(String id, String mimeType, int width, int height, float frameRate,
       int audioChannels, int audioSamplingRate, int bitrate, String language, String codecs) {
+    this(id, mimeType, width, height, frameRate, audioChannels, audioSamplingRate, bitrate, language,
+        codecs, null);
+  }
+
+  /**
+   * @param id The format identifier.
+   * @param mimeType The format mime type.
+   * @param width The width of the video in pixels, or -1 if unknown or not applicable.
+   * @param height The height of the video in pixels, or -1 if unknown or not applicable.
+   * @param frameRate The frame rate of the video in frames per second, or -1 if unknown or not
+   *     applicable.
+   * @param audioChannels The number of audio channels, or -1 if unknown or not applicable.
+   * @param audioSamplingRate The audio sampling rate in Hz, or -1 if unknown or not applicable.
+   * @param bitrate The average bandwidth of the format in bits per second.
+   * @param language The language of the format.
+   * @param codecs The codecs used to decode the format.
+   * @param videoRange The videoRange of the format.
+   */
+  public Format(String id, String mimeType, int width, int height, float frameRate,
+      int audioChannels, int audioSamplingRate, int bitrate, String language, String codecs,
+      String videoRange) {
     this.id = Assertions.checkNotNull(id);
     this.mimeType = mimeType;
     this.width = width;
@@ -147,6 +174,7 @@ public class Format {
     this.bitrate = bitrate;
     this.language = language;
     this.codecs = codecs;
+    this.videoRange = videoRange;
   }
 
   @Override
