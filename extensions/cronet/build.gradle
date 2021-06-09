@@ -15,7 +15,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    //buildToolsVersion "23.0.1"
 
     defaultConfig {
         minSdkVersion 9
@@ -40,12 +40,12 @@ android {
 }
 
 dependencies {
-    compile project(':library')
-    compile files('libs/cronet_api.jar')
-    compile files('libs/cronet.jar')
-    androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
-    androidTestCompile 'org.mockito:mockito-core:1.9.5'
-    androidTestCompile project(':library')
-    androidTestCompile 'com.android.support.test:runner:0.4'
+    implementation project(':library')
+    implementation files('libs/cronet_api.jar')
+    implementation files('libs/cronet.jar')
+    androidTestImplementation 'com.google.dexmaker:dexmaker:1.2'
+    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
+    androidTestImplementation 'org.mockito:mockito-core:1.9.5'
+    androidTestImplementation project(':library')
+    androidTestImplementation 'com.android.support.test:runner:0.4'
 }

@@ -16,7 +16,7 @@ apply plugin: 'bintray-release'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    //buildToolsVersion "23.0.1"
 
     defaultConfig {
         // Important: ExoPlayerLib specifies a minSdkVersion of 9 because
@@ -40,10 +40,19 @@ android {
     }
 }
 
+publish {
+    //userOrg = 'exoplayer-r1.5.11'
+    //groupId = 'com.sony'
+    //artifactId = 'bintray-release'
+    publishVersion = 'based on r1.5.11'
+    desc = 'Exo player modified by Sony'
+    //website = 'https://github.com/gvr/bintray-release'
+}
+
 dependencies {
-    androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
-    androidTestCompile 'org.mockito:mockito-core:1.9.5'
+    androidTestImplementation 'com.google.dexmaker:dexmaker:1.2'
+    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
+    androidTestImplementation 'org.mockito:mockito-core:1.9.5'
 }
 
 android.libraryVariants.all { variant ->
